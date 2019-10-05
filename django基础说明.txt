@@ -1,0 +1,86 @@
+
+Django
+1. 安装
+	1. Django版本 1.11.xx
+	2. 安装方式
+		1. 命令行：pip3 install django==1.11.9        
+				   --> Python环境(双版本,pip的使用)
+		2. PyCharm安装
+		
+2. 创建Django项目
+	1. 创建方式
+		1. 命令行创建方式
+			1. cd到你要保存Django项目的目录
+			2. Django-admin startproject 项目名   --> 会在当前目录创建Django项目
+		2. PyCharm创建方式
+			1. File --> new project --> ...
+			2. 创建完之后一定要选在新窗口打开!!!
+			
+3. 配置Django项目
+	1. settings.py文件
+		1. templates文件夹的位置
+		2. 静态文件
+			1. STATIC_URL         --> 静态文件夹的别名(在HTML文件中用的)
+			2. STATICFILES_DIRS   --> 静态文件夹的真正路径
+		3. 注释掉 csrf 相关的中间件（可以不注释）
+		4. Django项目连接的数据库信息
+		
+4. Django WEB请求流程(简版)	
+	1. 启动Django项目,等待用户连接
+	2. 浏览器在地址栏输入URL,来连接我的Django项目
+	3. 在urls.py中 找 路径和函数的 对应关系
+	4. 执行对应的函数  render(request," .url")
+	5. 返回响应  HttpResponse()
+	
+5. views.py
+	1. 专门用来定义处理请求的函数
+		1. 基本必备三件套
+			from django.shortcuts import HttpResponse, render, redirect
+			1. HttpResponse("要返回的内容")            --> 通常用于直接返回数据
+			2. render(request, "html文件", {"k1": v1}) --> 返回一个HTML文件或者打开文件进行字符串替换
+			3. redirect("URL")                         --> 告诉用户的浏览器去访问其他的URL
+	
+		2. request相关
+			1. request.method     --> 查看请求的方法
+			2. request.POST       --> 获取POST请求的数据
+			
+6. ORM使用
+	1. 什么是ORM? 
+		是一种编程的方法论(模型), 和语言无关.(其他的语言也有类似的实现.)
+		
+	2. ORM的本质:
+		类    --->    数据表
+		对象  --->    数据行
+		属性  --->    字段
+		
+		按照规定的语法写,自动翻译成对应的SQL语句.
+		
+	3. ORM的功能:	
+		ORM操作数据表
+		ORM操作数据行
+		
+	4. Django里ORM的使用:
+		1. 手动创建数据库
+		2. 在settings.py里面,配置数据库的连接信息
+			DATABASES = {
+				'default': {
+					'ENGINE': 'django.db.backends.mysql',
+					'NAME': 'day62',
+					'HOST': '127.0.0.1',
+					'PORT': 3306,
+					'USER': 'root',
+					'PASSWORD': '123456',
+				}
+			}
+		3. 在项目/__init__.py告诉Django用pymysql模块代替MySQLdb来连接MySQL数据库
+			import pymysql
+			pymysql.install_as_MySQLdb()
+		4. 在app/models.py里面定义类
+			# 出版社
+			class Publisher(models.Model):
+				id = models.AutoField(primary_key=True)  # 自增的ID主键
+				# 创建一个varchar(64)的唯一的不为空的字段
+				name = models.CharField(max_length=64, null=False, unique=True)
+		5. 执行两个命令
+			1. python manage.py makemigrations   --> 把models.py里面的更改记录到小本本上
+			2. python manage.py migrate  --> 把更改翻译成SQL语句,去数据库执行

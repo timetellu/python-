@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta name='description' content="内容" http-equiv="refresh" charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>sweetalert</title>
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/fontAwesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/sweetalert/sweetalert.css">
+    <style>
+        .sweet-alert > h2 {
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Person 管理</h3>
+        </div>
+        <div class="panel-body">
+            <div class="bs-example" data-example-id="hoverable-table">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>id</th>
+                        <th>name</th>
+                        <th>年龄</th>
+                        <th>生日</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for p in persons %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ p.id }}</td>
+                            <td>{{ p.name }}</td>
+                            <td>{{ p.age }}</td>
+                            <td>{{ p.birthday|date:"Y-m-d" }}</td>
+                            <td>
+                                <button class="btn btn-danger del"><i class="fa fa-trash"> 删除</i></button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/jquery-3.2.1.min.js"></script>
+<script src="/static/bootstrap/js/bootstrap.min.js"></script>
+<script src="/static/sweetalert/sweetalert.min.js"></script>
+<script src="/static/setup_ajax.js"></script>
+<script>
+    {#    找到删除按钮绑定事件#}
+    // language=JQuery-CSS
+    $(".del").on("click", function () {
+        var $tr_ele = $(this).parent().parent();
+        var del_id = $tr_ele.children().eq(1).text();
+        swal({
+                title: "你确定要删除吗?",
+                text: "一旦删除就找不回来了",
+                type: "warning",
+                showCancelButton: true,
+                showLoaderOnConfirm: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "确认",
+                cancelButtonText: "取消",
+                closeOnConfirm: false
+            },
+        function () {              {#向后端发送删除的请求#}
+            $.ajax({
+                url: "/delete/",
+                type:"post",
+                data:{"id":del_id},
+                success:function(arg){
+                    swal(arg, "准备好跑路吧", "success");
+                    $tr_ele.remove();
+                }
+            })
+        });
+    })
+</script>
+</body>
+</html>
